@@ -33,7 +33,6 @@ void funcAAA( uint32_t _value ) {
 void funcBBB( float _value ) {
     float s = _value;
     printf("%p\n", &s);
-    funcBBB(s);
 }
 
 int main( int _argc, char** _argv ) {
