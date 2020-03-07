@@ -1,6 +1,7 @@
 #include <cstdio>
 #include <cstdint>
 #include <memory.h>
+#include <cstdlib>
 
 const char* textSample1 = "hello,world!";
 const char textSample2[] = "hello,world!";
@@ -36,9 +37,7 @@ void funcBBB( float _value ) {
 }
 
 int main( int _argc, char** _argv ) {
-
-    int arr[10240000];
-
+    
     printf("%s", textSample1);
     //
     StructSample sSample;   // sizeof( StructSample ) == 16
@@ -71,7 +70,13 @@ int main( int _argc, char** _argv ) {
         float s = 3.1415926f;
         printf("%p\n", &s);
     }
-    // printf("%u", v);
-
+    int a = 5;//
+    size_t ptr = (size_t)&a;
+    size_t pptr =  (size_t)&ptr;
+    size_t ppptr = (size_t)&pptr;
+    printf("%d\n%d\n%d\n",
+        ptr, pptr, ppptr
+    );
+    //
     return 0;
 }
