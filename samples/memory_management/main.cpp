@@ -78,5 +78,61 @@ int main( int _argc, char** _argv ) {
         ptr, pptr, ppptr
     );
     //
+    struct MemLayoutSample {
+        int a;
+        int b;
+        int c;
+        int d;
+    };
+
+    MemLayoutSample memSample;
+    int             intArrSample[4];
+
+    int MemLayoutSample::* memoffset = &MemLayoutSample::a;
+
+    printf("MemLayoutSample data member offsets : \n");
+    printf("%u\n", memoffset);
+    memoffset =  &MemLayoutSample::b;
+    printf("%u\n", memoffset);
+    memoffset =  &MemLayoutSample::c;
+    printf("%u\n", memoffset);
+    memoffset =  &MemLayoutSample::d;
+    printf("%u\n", memoffset);
+    //
+    int v = memSample.a;
+    //
+    int* membegin = (int*)&memSample;
+    //
+    memSample.b = 16;
+    int b = *(membegin+1);
+    printf("validate the 'b' == %d\n", b);
+
+    int* pointer = &intArrSample[0];
+    MemLayoutSample* memlayoutSamplePtr = (MemLayoutSample*)pointer;
+    memlayoutSamplePtr->a = 0;
+    memlayoutSamplePtr->b = 1;
+    memlayoutSamplePtr->c = 2;
+    memlayoutSamplePtr->d = 3;
+    printf("array contents : \n");
+    printf("%d\n%d\n%d\n%d\n",
+        intArrSample[0],
+        intArrSample[1],
+        intArrSample[2],
+        intArrSample[3]
+    );
+    //
+    uSample;
+    //
+    union {
+        size_t offset;
+        int MemLayoutSample::* offsetT;
+    } offsetu ;
+    offsetu.offsetT = &MemLayoutSample::b;
+    size_t offsetA = offsetu.offset;
+    //
+    printf("offset b = %ul\n", offsetA);
+    //
+    
+    //
     return 0;
 }
