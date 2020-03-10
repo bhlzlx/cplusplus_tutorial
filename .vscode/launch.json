@@ -61,6 +61,25 @@
                     "ignoreFailures": true
                 }
             ]
+        }, {
+            "name": "forward_declare",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/samples/forward_declare/forward_declare.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "gdb.exe",
+            "setupCommands": [
+                {
+                    "description": "为 gdb 启用整齐打印",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
         }
     ]
 }

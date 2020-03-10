@@ -1,3 +1,5 @@
+add_subdirectory( base64 )
 add_subdirectory( helloworld )
 add_subdirectory( basics )
 add_subdirectory( memory_management )
+add_subdirectory( forward_declare )
