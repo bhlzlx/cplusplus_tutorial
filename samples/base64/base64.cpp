@@ -1,11 +1,10 @@
-#pragma once
 #include "base64.h"
 #include <cassert>
 
 namespace base64
 {
-	const static uint8_t EncTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-	const static uint8_t DecTable[] = {
+	const static int8_t EncTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+	const static int8_t DecTable[] = {
 		-2, -2, -2, -2, -2, -2, -2, -2, -2, -1, -1, -2, -2, -1, -2, -2,
 		-2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2,
 		-1, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, 62, -2, -2, -2, 63,
@@ -24,7 +23,7 @@ namespace base64
 		-2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2
 	};
 	//
-	void Base64Encode(const uint8_t * _data, size_t _size, std::string& _base64)
+	void Base64Encode(const int8_t * _data, size_t _size, std::string& _base64)
 	{
 		_base64.clear();
 		_base64.reserve(_size * 4 / 3 + 4);
@@ -61,15 +60,14 @@ namespace base64
 		}
 	}
 
-	size_t Base64Decode(const char * _base64, size_t _length, uint8_t * _data, size_t _size)
+	size_t Base64Decode(const char * _base64, size_t _length, int8_t * _data, size_t _size)
 	{
 		assert(_length >= 4);
 		if (_size < (_length >> 2) / 3) {
-			// ���岻����
 			return 0;
 		}
 		size_t i = 0;
-		uint8_t * ptr = _data;
+		int8_t * ptr = _data;
 		if (_length > 4) {
 			for (; i < _length - 4; i += 4) {
 				*ptr = (DecTable[_base64[i]] << 2) | (DecTable[_base64[i + 1]] >> 4); ++ptr;
