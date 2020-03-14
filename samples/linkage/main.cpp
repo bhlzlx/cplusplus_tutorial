@@ -5,11 +5,12 @@
 #include "lib.h"
 
 int main() {
-    //int a = cxor( 5, 6 );
     // printf("hello,world!");
     const char * msg = "hello,world!";
     std::string base64code;
     base64::Base64Encode( (int8_t*)msg, strlen(msg), base64code);
     printf("base64 code : %s\n", base64code.c_str());
+    //int a = xorpp( 5, 6 );
+    //printf( "%d\n", global_integer );
     return 0;
 }
