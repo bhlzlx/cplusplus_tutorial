@@ -23,7 +23,7 @@ namespace base64
 		-2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2
 	};
 	//
-	void Base64Encode(const int8_t * _data, size_t _size, char * _base64)
+	BASE64_EXPORT void Base64Encode(const int8_t * _data, size_t _size, char * _base64)
 	{
 		//
 		char cache[5] = { 0 };
@@ -61,7 +61,7 @@ namespace base64
 		*_base64 = 0;
 	}
 
-	size_t Base64Decode(const char * _base64, size_t _length, int8_t * _data, size_t _size)
+	BASE64_EXPORT size_t Base64Decode(const char * _base64, size_t _length, int8_t * _data, size_t _size)
 	{
 		assert(_length >= 4);
 		if (_size < (_length >> 2) / 3) {

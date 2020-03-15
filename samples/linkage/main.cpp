@@ -7,9 +7,9 @@
 int main() {
     // printf("hello,world!");
     const char * msg = "hello,world!";
-    std::string base64code;
+    char base64code[24];
     base64::Base64Encode( (int8_t*)msg, strlen(msg), base64code);
-    printf("base64 code : %s\n", base64code.c_str());
+    printf("base64 code : %s\n", base64code);
     //int a = xorpp( 5, 6 );
     //printf( "%d\n", global_integer );
     return 0;

@@ -5,11 +5,11 @@ project( cplusplus_tutorial )
 if( MINGW )
     if( CMAKE_BUILD_TYPE STREQUAL "Debug" )
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -g -Wall -Wunused-function -pthread")
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c++11 -g -pthread")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -g -pthread")
         message("MINGW - Debug mode")
     elseif( CMAKE_BUILD_TYPE STREQUAL "Release" ) # debug
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -pthread -Wunused-function")
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2 -pthread")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -O2 -pthread -Wunused-function")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -O2 -pthread")
         message("MINGW - Release mode")
     endif() # Debug
     #

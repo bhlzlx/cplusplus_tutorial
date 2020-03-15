@@ -13,6 +13,10 @@ add_executable( linkage
     ${src}
 )
 
+link_directories (
+
+)
+
 target_link_libraries( 
     linkage
     base64
