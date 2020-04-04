@@ -43,9 +43,9 @@ endif() # CLANG
 # Microsoft Visual C++ Compilers
 if(MSVC)
     if( CMAKE_BUILD_TYPE STREQUAL "Debug" )
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
     elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  /fp:fast /Gy /Oi /Oy /O2 /Ot /Zi /EHsc ")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /fp:fast /Gy /Oi /Oy /O2 /Ot /Zi /EHsc ")
     endif()
     if(CMAKE_CL_64)
         set( PROJECT_ARCHITECTURE "x64" )
