@@ -6,7 +6,7 @@ set( src
 )
 
 include_directories(
-    ${CMAKE_SOURCE_DIR}/samples/base64
+    ${CMAKE_SOURCE_DIR}/samples/ex.base64
 )
 
 add_executable( linkage

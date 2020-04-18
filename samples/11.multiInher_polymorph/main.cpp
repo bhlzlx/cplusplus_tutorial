@@ -62,6 +62,6 @@ int main( int argc, char** _argv ) {
 	// 子类 -> 基类 （ static_cast<>() ）
 	// 基类 -> 子类 （ dynamic_cast<>() ）
 	// 有可能变化
-	RunnerDog* runnerDog = (RunnerDog*)(speaker);
+	// RunnerDog* runnerDog = (RunnerDog*)(speaker);
  	return 0;
 }
