@@ -44,7 +44,20 @@
         "ostream": "cpp",
         "sstream": "cpp",
         "stdexcept": "cpp",
-        "streambuf": "cpp"
+        "streambuf": "cpp",
+        "iostream": "cpp",
+        "ios": "cpp",
+        "random": "cpp",
+        "xfacet": "cpp",
+        "xiosbase": "cpp",
+        "xlocale": "cpp",
+        "xlocinfo": "cpp",
+        "xlocnum": "cpp",
+        "xstring": "cpp",
+        "list": "cpp",
+        "functional": "cpp",
+        "iterator": "cpp",
+        "numeric": "cpp"
     }
    
 }
