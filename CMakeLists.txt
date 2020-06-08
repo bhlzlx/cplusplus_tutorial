@@ -19,6 +19,7 @@ if( MINGW )
     set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32")
     endif() # x64
     #set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} " )
+    set( CMAKE_EXECUTABLE_SUFFIX ".exe" )
 endif() # MINGW
 
 if( APPLE )
@@ -55,6 +56,7 @@ if(MSVC)
     #
     ADD_DEFINITIONS(-D_CRT_SECURE_NO_WARNINGS)
     #
+    set( CMAKE_EXECUTABLE_SUFFIX ".exe" )
 endif()
 
 add_subdirectory( samples )
