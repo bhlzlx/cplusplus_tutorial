@@ -5,7 +5,9 @@
 
 
 std::string add( const char* n1, const char* n2 ) {
+	// 返回值
 	std::string rst;
+	// 预定义
 	constexpr char chZero = '0';
 	constexpr char chOne = '1';
 	constexpr char chNine = '9';
@@ -15,6 +17,7 @@ std::string add( const char* n1, const char* n2 ) {
 	n1+=n1Length-1;
 	n2+=n2Length-1;
 	rst.resize(length);
+	// 取逆向迭代器从低位向高位输出
 	auto iter = rst.rbegin();
 	auto end = rst.rend();
 	bool overflow = false;
@@ -40,6 +43,7 @@ std::string add( const char* n1, const char* n2 ) {
 		if(n<=chNine) {
 			*iter = n;
 		} else {
+			// 相加，大于10就进位，当前位减10
 			*iter = n-10;
 			overflow = true;
 		}
@@ -61,7 +65,7 @@ std::string add( const char* n1, const char* n2 ) {
 
 
 int main() {
-	std::string rst = add( "5465666665555555554444", "5465666665555555554444" );
+	std::string rst = add( "5465666665555555554444", "9999999999999" );
 	printf("%s\n", rst.c_str());
 	return 0;
 }

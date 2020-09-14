@@ -1,6 +1,5 @@
 {
     "files.associations": {
-        "*.txt": "cpp",
         "string": "cpp",
         "concepts": "cpp",
         "cstddef": "cpp",
@@ -59,5 +58,4 @@
         "iterator": "cpp",
         "numeric": "cpp"
     }
-   
 }
