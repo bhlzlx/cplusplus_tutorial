@@ -78,6 +78,8 @@ if(MSVC)
     endif()
 endif()
 
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
 message( "target platform : ${CMAKE_SYSTEM_NAME}")
 
 set( SOLUTION_DIR ${CMAKE_CURRENT_SOURCE_DIR} )
