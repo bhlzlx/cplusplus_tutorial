@@ -1,5 +1,32 @@
-add_subdirectory( ex.base64 )
-add_subdirectory( ex.base64_dynamic )
+# ============= dynamic base64 implementation =============
+
+project( base64_dynamic )
+add_library ( base64_dynamic SHARED )
+target_include_directories( base64_dynamic
+    PUBLIC ./ex.base64_dynamic
+)
+target_sources( base64_dynamic
+    PRIVATE ./ex.base64_dynamic/base64.cpp
+)
+target_compile_options( base64_dynamic 
+    PUBLIC ${CMAKE_CXX_COMPILE_FLAGS}
+    PRIVATE /D BASE64_SHARED
+)
+
+# ============= static base64 implementation =============
+
+project( base64 )
+add_library ( base64 STATIC )
+target_sources( base64
+    PRIVATE ./ex.base64/base64.cpp
+)
+target_include_directories( base64
+    PUBLIC ./ex.base64
+)
+project( libs )
+
+# ============= demo projects =============
+
 add_subdirectory( 0.helloworld )
 add_subdirectory( 1.basics )
 add_subdirectory( 4.memory_management )

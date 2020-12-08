@@ -1,4 +1,5 @@
 
 build/*
 win32/*
+bin/Windows_32_Debug/*
 
