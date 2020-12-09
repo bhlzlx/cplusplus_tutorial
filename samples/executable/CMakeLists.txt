@@ -13,3 +13,8 @@ AddExecutable( multiInher_polymorph "Samples" )
 AddExecutable( member_offset "Samples" )
 AddExecutable( lrucache "Samples" )
 AddExecutable( bigInteger "Samples" )
+
+
+target_link_libraries(  linkage
+    PUBLIC base64
+)

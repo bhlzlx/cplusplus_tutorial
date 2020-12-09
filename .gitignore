@@ -2,4 +2,11 @@
 build/*
 win32/*
 bin/Windows_32_Debug/*
+bin/Windows_32_Release/*
+bin/Windows_64_Debug/*
+bin/Windows_64_Release/*
+bin/Linux_32_Debug/*
+bin/Linux_32_Release/*
+bin/Linux_64_Debug/*
+bin/Linux_64_Release/*
 
