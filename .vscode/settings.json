@@ -57,5 +57,9 @@
         "functional": "cpp",
         "iterator": "cpp",
         "numeric": "cpp"
-    }
+    },
+    "cmake.preferredGenerators": [
+        "MinGW Makefiles",
+    "Ninja"
+    ]
 }
