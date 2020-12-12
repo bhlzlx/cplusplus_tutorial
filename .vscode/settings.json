@@ -56,10 +56,14 @@
         "list": "cpp",
         "functional": "cpp",
         "iterator": "cpp",
-        "numeric": "cpp"
+        "numeric": "cpp",
+        "bit": "cpp",
+        "chrono": "cpp",
+        "condition_variable": "cpp",
+        "ctime": "cpp",
+        "ratio": "cpp",
+        "shared_mutex": "cpp"
     },
     "cmake.preferredGenerators": [
-        "MinGW Makefiles",
-    "Ninja"
     ]
 }

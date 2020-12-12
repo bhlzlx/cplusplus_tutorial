@@ -13,7 +13,8 @@ AddExecutable( multiInher_polymorph "Samples" )
 AddExecutable( member_offset "Samples" )
 AddExecutable( lrucache "Samples" )
 AddExecutable( bigInteger "Samples" )
-AddExecutable( pmr "Samples" )
+AddExecutable( pmr_basic "Samples" )
+AddExecutable( pmr_complex "Samples" )
 
 
 target_link_libraries(  linkage
