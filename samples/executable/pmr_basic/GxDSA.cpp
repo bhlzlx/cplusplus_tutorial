@@ -14,20 +14,34 @@ GxDSA::GxDSA()
     _tlsf = tlsf_create(mem);
 }
 
+constexpr size_t AlignMask = (1024 * 1024)-1;
+
+size_t MakeAlignedSize( size_t size ) {
+    size_t rst = 16;
+    while(rst<size) {
+        rst <<= 1;
+    }
+    return rst;
+}
+
 void* GxDSA::allocate( size_t size ) {
     void* mem = tlsf_malloc(_tlsf, size );
     if(!mem) {
         if(size <= DefaultPoolSize) {
-            void* mem = malloc(DefaultPoolSize);
-            auto pool = tlsf_add_pool(_tlsf, mem, DefaultPoolSize);
+            void* allocMem = malloc(DefaultPoolSize);
+            auto pool = tlsf_add_pool(_tlsf, allocMem, DefaultPoolSize);
             _runtimeSize += DefaultPoolSize;
+            mem = tlsf_malloc(_tlsf, size);
+            assert(mem != nullptr);
         } else {
-            size_t alignedSize = (size + 1024 * 1024-1) & (1024 * 1024-1);
-            auto pool = tlsf_add_pool(_tlsf, mem, alignedSize);
+            //size_t alignedSize = (size + AlignMask) & ~AlignMask;
+            size_t alignedSize = MakeAlignedSize(size);
+            void* allocMem = malloc(alignedSize);
+            auto pool = tlsf_add_pool(_tlsf, allocMem, alignedSize);
             _runtimeSize += alignedSize;
+            mem = tlsf_malloc(_tlsf, size);
+            assert(mem != nullptr);
         }
-        mem = tlsf_malloc(_tlsf, size);
-        assert(mem != nullptr);
     }
     _usedSize += size;
     return mem;
@@ -37,12 +51,14 @@ void* GxDSA::allocateAligned( size_t size, size_t alignment ) {
     void* mem = tlsf_memalign( _tlsf, alignment, size );
     if(!mem) {
         if( size + alignment <= DefaultPoolSize) {
-            void* mem = malloc(DefaultPoolSize);
-            auto pool = tlsf_add_pool(_tlsf, mem, DefaultPoolSize);
+            void* allocMem = malloc(DefaultPoolSize);
+            auto pool = tlsf_add_pool(_tlsf, allocMem, DefaultPoolSize);
             _runtimeSize += DefaultPoolSize;
         } else {
-            size_t alignedSize = ((size+alignment) + 1024 * 1024-1) & (1024 * 1024-1);
-            auto pool = tlsf_add_pool(_tlsf, mem, alignedSize);
+            // size_t alignedSize = (size + alignment + AlignMask) & ~AlignMask;
+            size_t alignedSize = MakeAlignedSize(size);
+            void* allocMem = malloc(alignedSize);
+            auto pool = tlsf_add_pool(_tlsf, allocMem, alignedSize);
             _runtimeSize += alignedSize;
         }
         mem = tlsf_memalign(_tlsf, alignment, size);

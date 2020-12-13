@@ -15,6 +15,7 @@ AddExecutable( lrucache "Samples" )
 AddExecutable( bigInteger "Samples" )
 AddExecutable( pmr_basic "Samples" )
 AddExecutable( pmr_complex "Samples" )
+AddExecutable( void_t "Samples" )
 
 
 target_link_libraries(  linkage

@@ -62,7 +62,10 @@
         "condition_variable": "cpp",
         "ctime": "cpp",
         "ratio": "cpp",
-        "shared_mutex": "cpp"
+        "shared_mutex": "cpp",
+        "compare": "cpp",
+        "mutex": "cpp",
+        "thread": "cpp"
     },
     "cmake.preferredGenerators": [
     ]
