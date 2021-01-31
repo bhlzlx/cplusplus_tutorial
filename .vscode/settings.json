@@ -1,6 +1,5 @@
 {
     "files.associations": {
-        "*.txt": "cpp",
         "string": "cpp",
         "concepts": "cpp",
         "cstddef": "cpp",
@@ -57,7 +56,17 @@
         "list": "cpp",
         "functional": "cpp",
         "iterator": "cpp",
-        "numeric": "cpp"
-    }
-   
+        "numeric": "cpp",
+        "bit": "cpp",
+        "chrono": "cpp",
+        "condition_variable": "cpp",
+        "ctime": "cpp",
+        "ratio": "cpp",
+        "shared_mutex": "cpp",
+        "compare": "cpp",
+        "mutex": "cpp",
+        "thread": "cpp"
+    },
+    "cmake.preferredGenerators": [
+    ]
 }
