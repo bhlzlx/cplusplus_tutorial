@@ -3,7 +3,16 @@
 #include <cstdint>
 #include <iostream>
 
-class Counter {
+void passRef( const int& valRef ) {
+    printf("%d", valRef);
+}
+
+void passVal( int val ) {
+    printf("%d", val);
+}
+
+class Counter
+{
 private:
     uint64_t    _counter;
 public:
@@ -13,7 +22,7 @@ public:
     void reset() {
         _counter = 0;
     }
-    void enref( const uint32_t& val ) {
+    void enref(const uint32_t &val){
         _counter += val;
         enref2(val);
     }
