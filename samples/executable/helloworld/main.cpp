@@ -1,67 +1,80 @@
-﻿#include <cstdio>
+﻿#include "stb_image.h"
+#include "stb_image_write.h"
 #include <cstdint>
 #include <vector>
-#include <string>
 
+struct rect {
+	uint32_t x,y;
+	uint32_t width,height;
+};
 
-std::string add( const char* n1, const char* n2 ) {
-	std::string rst;
-	constexpr char chZero = '0';
-	constexpr char chOne = '1';
-	constexpr char chNine = '9';
-	const uint32_t n1Length = (uint32_t)strlen(n1);
-	const uint32_t n2Length = (uint32_t)strlen(n2);
-	uint32_t length = n1Length > n2Length ? n1Length : n2Length;
-	n1+=n1Length-1;
-	n2+=n2Length-1;
-	rst.resize(length);
-	auto iter = rst.rbegin();
-	auto end = rst.rend();
-	bool overflow = false;
-	while( iter!=end ) {
-		char chN1 = *n1;
-		char chN2 = *n2;
-		if(chN1) {
-			--n1;
-		} else {
-			chN1 = chZero;
+class SplitedRegion {
+private:
+	std::vector<std::vector<rect>> 		main_cells;
+	std::vector<rect> 					bottom_sides;
+	std::vector<rect> 					right_sides;
+	rect 								corner;
+	////////////////////////////////
+	uint32_t*							pixels;
+public:
+
+	SplitedRegion( uint32_t img_width, uint32_t img_height, uint32_t cell_size ) {
+		if(cell_size>=img_width || cell_size <= img_height) {
+			return;
 		}
-		if(chN2) {
-			--n2;
-		} else {
-			chN2 = chZero;
+		uint32_t horizental_count = img_width / cell_size;
+		uint32_t horizental_left = img_width % cell_size;
+		uint32_t vertical_count = img_height / cell_size;
+		uint32_t vertical_left = img_height % cell_size;
+		// gen main cells
+		for( uint32_t y = 0; y<vertical_count; ++y) {
+			main_cells.emplace_back();
+			for(uint32_t x = 0; x<horizental_count; ++x) {
+				rect rc = {
+					x*cell_size, y*cell_size, 
+					cell_size, cell_size,
+				};
+				main_cells.back().push_back(rc);
+			}
 		}
-		// ========================= 
-		char n = chN1 + chN2 - chZero;
-		if(overflow) {
-			n+=1;
-			overflow = false;
+		if(vertical_left) {
+			for( uint32_t i = 0; i<horizental_count; ++i) {
+				rect rc = {
+					i*cell_size, vertical_count*cell_size,
+					cell_size, vertical_left
+				};
+				bottom_sides.push_back(rc);
+			}
 		}
-		if(n<=chNine) {
-			*iter = n;
-		} else {
-			*iter = n-10;
-			overflow = true;
+		if(horizental_left) {
+			for( uint32_t i = 0; i<vertical_count; ++i) {
+				rect rc = {
+					cell_size * horizental_count, i*cell_size,
+					horizental_left, cell_size
+				};
+				right_sides.push_back(rc);
+			}
 		}
-		++iter;
+		if(horizental_left&&vertical_left) {
+			corner = { cell_size*horizental_count, cell_size*vertical_count, horizental_left, vertical_left };
+		}
 	}
-	if(overflow) {
-		rst.resize(rst.size()+1);
-		auto iter = rst.rbegin();
-		auto last = rst.rend() - 1;
-		while(iter!=last) {
-			auto next = iter+1;
-			*iter = *next;
-			iter = next;
-		}
-		rst[0] = chOne;
+
+	void obfuscate() {
 	}
-	return rst;
-}
+
+	void swap_cell( rect a, rect b ) {
+
+	}
+
+	bool valid() {
+		return !!main_cells.size();
+	}
+
+};
 
 
 int main() {
-	std::string rst = add( "5465666665555555554444", "5465666665555555554444" );
-	printf("%s\n", rst.c_str());
+	uint32_t* bitmap = new uint32_t[480*320];
 	return 0;
 }

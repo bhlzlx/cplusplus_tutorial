@@ -68,5 +68,8 @@
         "thread": "cpp"
     },
     "cmake.preferredGenerators": [
-    ]
+    ],
+    "lldb.displayFormat": "auto",
+    "lldb.showDisassembly": "always",
+    "lldb.dereferencePointers": true
 }
