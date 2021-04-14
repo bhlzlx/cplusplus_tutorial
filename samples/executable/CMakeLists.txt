@@ -17,6 +17,8 @@ AddExecutable( pmr_basic "Samples" )
 AddExecutable( pmr_complex "Samples" )
 AddExecutable( void_t "Samples" )
 AddExecutable( constexpr "Samples" )
+AddExecutable( reference_explain_1 "Samples" )
+AddExecutable( barrier "Samples" )
 
 
 target_link_libraries(  linkage
