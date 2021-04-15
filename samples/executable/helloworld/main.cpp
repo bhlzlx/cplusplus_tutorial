@@ -1,4 +1,6 @@
-﻿#define STB_IMAGE_WRITE_IMPLEMENTATION
+﻿#include <string>
+#include <regex>
+#define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -21,8 +23,28 @@ private:
 	uint32_t*							bitmap_data;
     uint32_t                            bitmap_width; 
     uint32_t                            bitmap_height; 
-public:
+private:	
+    void swap_pixel( uint32_t x1, uint32_t y1, uint32_t x2, uint32_t y2 ) {
+        uint32_t index1 = x1 + y1 * bitmap_width;
+        uint32_t index2 = x2 + y2 * bitmap_width;
+        uint32_t t = bitmap_data[index1];
+        bitmap_data[index1] = bitmap_data[index2];
+        bitmap_data[index2] = t;
+    }
 
+	void swap_cell( rect a, rect b ) {
+        uint32_t ax = a.x;
+        uint32_t ay = a.y;
+        uint32_t bx = b.x;
+        uint32_t by = b.y;
+        // 
+        for(uint32_t y = 0; y<a.height; ++y) {
+            for(uint32_t x = 0; x<a.width; ++x) {
+                swap_pixel(ax+x, ay+y, bx+x, by+y);
+            }
+        }
+	}
+public:
 	ImageObfuscater( uint32_t * data, uint32_t img_width, uint32_t img_height, uint32_t cell_size )
         : main_cells()
         , bottom_sides()
@@ -109,30 +131,9 @@ public:
             for(uint32_t y = 0; y<y_max; ++y) {
                 if(row_count-1-y != y) {
                     rect rc_1 =right_sides[y];
-                    rect rc_2 =right_sides[row_size-2-y];
+                    rect rc_2 =right_sides[row_count-2-y];
                     swap_cell(rc_1, rc_2);
                 }
-            }
-        }
-	}
-
-    void swap_pixel( uint32_t x1, uint32_t y1, uint32_t x2, uint32_t y2 ) {
-        uint32_t index1 = x1 + y1 * bitmap_width;
-        uint32_t index2 = x2 + y2 * bitmap_width;
-        uint32_t t = bitmap_data[index1];
-        bitmap_data[index1] = bitmap_data[index2];
-        bitmap_data[index2] = t;
-    }
-
-	void swap_cell( rect a, rect b ) {
-        uint32_t ax = a.x;
-        uint32_t ay = a.y;
-        uint32_t bx = b.x;
-        uint32_t by = b.y;
-        // 
-        for(uint32_t y = 0; y<a.height; ++y) {
-            for(uint32_t x = 0; x<a.width; ++x) {
-                swap_pixel(ax+x, ay+y, bx+x, by+y);
             }
         }
 	}
@@ -143,12 +144,73 @@ public:
 
 };
 
+bool is_jpeg( FILE* file ) {
+	constexpr uint8_t JPEG_HEAD[] = {0xFF,0xD8}; 
+	constexpr uint8_t JPEG_TAIL[] = {0xFF,0xD9}; 
+	uint8_t bytes[2];
+	fseek(file, 0, SEEK_SET);
+	fread(bytes, 1, 2, file);
+	if(memcmp(JPEG_HEAD, bytes, 2)!=0) {
+		return false; 
+	}
+	fseek(file, -2, SEEK_END);
+	fread(bytes, 1, 2, file);
+	if(memcmp(JPEG_TAIL, bytes, 2)!=0) {
+		return false; 
+	}
+	return true;
+}
 
-int main() {
+bool is_png( FILE* file) {
+	const uint8_t PNG_HEADER[] = {0x89,0x50,0x4E,0x47,0x0D,0x0A,0x1A,0x0A};
+	uint8_t bytes[sizeof(PNG_HEADER)];
+	fseek(file, 0, SEEK_SET);
+	fread(bytes, 1, sizeof(PNG_HEADER), file);
+	if(memcmp(PNG_HEADER, bytes, sizeof(PNG_HEADER))!=0) {
+		return false; 
+	}
+	return false;
+}
+
+
+enum class ImageType {
+	PNG,
+	JPEG,
+	INVALID,
+};
+
+int main( int argc, char const ** argv ) {
+	if(argc < 4) { 
+		printf("argument error!");
+		printf("usage: imgobfus input_filepath output_filepath 32");
+		return -1;
+	}
+	uint32_t cell_size = atoi(argv[3]);
+	std::string input_path = argv[1];
+	std::string output_path = argv[2];
+	auto file = fopen(input_path.c_str(), "rb");
+	if(!file) { 
+		printf("file not found!");
+	}
+	ImageType type = ImageType::INVALID;
+	if( is_jpeg(file)) {
+		type = ImageType::JPEG;
+	} else if( is_png(file)) {
+		type = ImageType::PNG;
+	}
+	if(type == ImageType::INVALID) {
+		printf("unsupported format!");
+	}
     int w,h,n;
-    auto data = stbi_load("d:/sasara.png", &w, &h, &n, 4);
-    ImageObfuscater obfs( (uint32_t*)data, w, h, 32 );
+    auto data = stbi_load(input_path.c_str(), &w, &h, &n, 4);
+    ImageObfuscater obfs( (uint32_t*)data, w, h, cell_size);
     obfs.obfuscate();
-    stbi_write_png("d:/output.png", w,h,4, data, w*4);
+	switch(type) {
+		case ImageType::JPEG:
+			stbi_write_jpg(output_path.c_str(), w, h, 4, data, w*4);
+			break;
+		case ImageType::PNG:
+			stbi_write_png(output_path.c_str(), w, h, 4, data, w*4);
+	}
 	return 0;
 }
