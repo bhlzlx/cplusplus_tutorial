@@ -106,7 +106,7 @@ public:
         }
         auto x_max = ((row_size + 1)&~(1)) >> 1;
         auto y_max = ((row_count+ 1)&~(1)) >> 1;
-        {
+        if(main_cells.size()){
             for( uint32_t y = 0; y<row_count; ++y) {
                 for( uint32_t x = 0; x<row_size; ++x) {
                     if(((float)row_count - y)/((float)x+1) > (float)row_count/(float)row_size) {
@@ -118,7 +118,7 @@ public:
                 }
             }
         }
-        {
+        if(bottom_sides.size()) {
             for(uint32_t x = 0; x<x_max; ++x) {
                 if(row_size-1-x != x) {
                     rect rc_1 = bottom_sides[x];
@@ -127,11 +127,11 @@ public:
                 }
             }
         }
-        {
+        if(right_sides.size()) {
             for(uint32_t y = 0; y<y_max; ++y) {
                 if(row_count-1-y != y) {
-                    rect rc_1 =right_sides[y];
-                    rect rc_2 =right_sides[row_count-2-y];
+                    rect rc_1 = right_sides[y];
+                    rect rc_2 = right_sides[row_count-2-y];
                     swap_cell(rc_1, rc_2);
                 }
             }
@@ -169,7 +169,7 @@ bool is_png( FILE* file) {
 	if(memcmp(PNG_HEADER, bytes, sizeof(PNG_HEADER))!=0) {
 		return false; 
 	}
-	return false;
+	return true;
 }
 
 
