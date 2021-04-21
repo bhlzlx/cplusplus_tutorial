@@ -1,4 +1,5 @@
 AddExecutable( helloworld "Samples" )
+AddExecutable( imgobfus "Samples" )
 AddExecutable( basics "Samples" )
 AddExecutable( memory_management "Samples" )
 AddExecutable( forward_declare "Samples" )

@@ -65,7 +65,9 @@
         "shared_mutex": "cpp",
         "compare": "cpp",
         "mutex": "cpp",
-        "thread": "cpp"
+        "thread": "cpp",
+        "regex": "cpp",
+        "xhash": "cpp"
     },
     "cmake.preferredGenerators": [
     ],
