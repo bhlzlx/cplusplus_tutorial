@@ -188,7 +188,7 @@ int main( int argc, char const ** argv ) {
 	#endif
 	if(argc == 2) {
 		input_path = argv[1];
-		auto pos = input_path.find('.');
+		auto pos = input_path.rfind('.');
 		if( pos == std::string::npos) {
 			return -1;
 		}
