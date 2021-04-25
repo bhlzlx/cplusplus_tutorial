@@ -124,24 +124,28 @@ public:
         auto x_max = ((row_size + 1)&~(1)) >> 1;
         auto y_max = ((row_count+ 1)&~(1)) >> 1;
 		__randseed(bitmap_width*bitmap_height);
-
 		std::set<uint64_t> exchange_map;
-
         if(main_cells.size()){
             for( uint32_t y = 0; y<row_count; ++y) {
                 for( uint32_t x = 0; x<row_size; ++x) {
 					auto exchange_val = (uint64_t)x|(uint64_t)y<<32;
 					if(exchange_map.find(exchange_val) == exchange_map.end()) {
-						uint64_t other_x = __rand()%row_size;
-						uint64_t other_y = __rand()%row_count;
-						auto other_exchange_val = other_x | (other_y <<32);
-						if(exchange_map.find(other_exchange_val) == exchange_map.end()) {
-							rect rc_1 = main_cells[y][x];
-							rect rc_2 = main_cells[other_y][other_x];
-							swap_cell(rc_1, rc_2);
-							//
-							exchange_map.insert(exchange_val);
-							exchange_map.insert(other_exchange_val);
+						// bool exchanged = false;
+						uint32_t timeout = 0;
+						while(timeout < 5){
+							uint64_t other_x = __rand()%row_size;
+							uint64_t other_y = __rand()%row_count;
+							auto other_exchange_val = other_x | (other_y <<32);
+							if(exchange_map.find(other_exchange_val) == exchange_map.end()) {
+								rect rc_1 = main_cells[y][x];
+								rect rc_2 = main_cells[other_y][other_x];
+								swap_cell(rc_1, rc_2);
+								exchange_map.insert(exchange_val);
+								exchange_map.insert(other_exchange_val);
+								break;
+							} else {
+								++timeout;
+							}
 						}
 					}
                 }
