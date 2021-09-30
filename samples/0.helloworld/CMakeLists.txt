@@ -1,9 +1,6 @@
-project( helloworld )
+add_executable(helloworld)
 
-set( src 
+target_sources(helloworld 
+PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
-)
-
-add_executable( helloworld
-    ${src}
 )

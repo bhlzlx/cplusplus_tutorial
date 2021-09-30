@@ -1,9 +1,10 @@
-project( multi_threading  )
-
 set( src 
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
 )
 
-add_executable( multi_threading
-    ${src}
+add_executable(multi_threading)
+
+target_sources( multi_threading
+PRIVATE
+   ${src}
 )

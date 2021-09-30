@@ -1,5 +1,7 @@
+project(ex)
 add_subdirectory( ex.base64 )
 add_subdirectory( ex.base64_dynamic )
+project(samples)
 add_subdirectory( 0.helloworld )
 add_subdirectory( 1.basics )
 add_subdirectory( 4.memory_management )

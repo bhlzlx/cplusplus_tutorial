@@ -1,9 +1,6 @@
-project( basics )
+add_executable(basics)
 
-set( src 
+target_sources(basics
+PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
-)
-
-add_executable( basics
-    ${src}
 )

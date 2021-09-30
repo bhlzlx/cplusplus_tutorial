@@ -1,10 +1,10 @@
-project( polymorphism )
-
 set( src 
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/prototype.cpp
 )
 
-add_executable( polymorphism
+add_executable( polymorphism)
+
+target_sources( polymorphism
+PRIVATE
     ${src}
 )
