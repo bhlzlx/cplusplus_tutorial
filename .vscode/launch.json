@@ -5,27 +5,22 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "(Windows) 附加",
-            "type": "cppvsdbg",
-            "request": "attach",
-            "processId": "${command:pickProcess}"
-        },
-        {
-            "name": "(Windows) 启动",
+            "name": "(Windows)helloworld",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/bin/Windows_64_Debug/helloworld.exe",
-            "args": ["f:/a.png", "f:/2.png", "16"],
+            "program": "${workspaceFolder}/build/samples/0.helloworld/debug/helloworld.exe",
+            "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
-            "console": "integratedTerminal"
+            "externalConsole": false
         },
+
         {
-            "name": "pmr_basic",
+            "name": "pointer_cast",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/bin/Windows_64_Debug/pmr_basic.exe",
+            "program": "${workspaceFolder}/build/samples/8.pointer_cast/pointer_cast.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
@@ -41,10 +36,106 @@
                 }
             ]
         }, {
-            "name": "pmr_complex",
+            "name": "polymorphism",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/bin/Windows_64_Debug/pmr_complex.exe",
+            "program": "${workspaceFolder}/build/samples/10.polymorphism/polymorphism.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "gdb.exe",
+            "setupCommands": [
+                {
+                    "description": "为 gdb 启用整齐打印",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        },{
+            "name": "multiInher_polymorph",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/samples/11.multiInher_polymorph/multiInher_polymorph.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "gdb.exe",
+            "setupCommands": [
+                {
+                    "description": "为 gdb 启用整齐打印",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        },{
+            "name": "entry_point",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/samples/9.entry_point/entry_point.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "gdb.exe",
+            "setupCommands": [
+                {
+                    "description": "为 gdb 启用整齐打印",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        },{
+        "name": "perfect_forwarding",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "${workspaceFolder}/build/samples/6.perfect_forwarding/perfect_forwarding.exe",
+        "args": [],
+        "stopAtEntry": false,
+        "cwd": "${workspaceFolder}",
+        "environment": [],
+        "externalConsole": false,
+        "MIMode": "gdb",
+        "miDebuggerPath": "gdb.exe",
+        "setupCommands": [
+            {
+                "description": "为 gdb 启用整齐打印",
+                "text": "-enable-pretty-printing",
+                "ignoreFailures": true
+            }
+        ]
+    }, {
+        "name": "ptrref",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "${workspaceFolder}/build/samples/5.pointer_reference/ptrref.exe",
+        "args": [],
+        "stopAtEntry": false,
+        "cwd": "${workspaceFolder}",
+        "environment": [],
+        "externalConsole": false,
+        "MIMode": "gdb",
+        "miDebuggerPath": "gdb.exe",
+        "setupCommands": [
+            {
+                "description": "为 gdb 启用整齐打印",
+                "text": "-enable-pretty-printing",
+                "ignoreFailures": true
+            }
+        ]
+    }, 
+        {
+            "name": "helloworld",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/samples/0.helloworld/helloworld.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
@@ -60,10 +151,10 @@
                 }
             ]
         }, {
-            "name": "void_t(gdb-debug)",
+            "name": "basics",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/bin/Windows_64_Debug/void_t.exe",
+            "program": "${workspaceFolder}/build/samples/1.basics/basics.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
@@ -79,10 +170,67 @@
                 }
             ]
         }, {
-            "name": "bigInteger(gdb-debug)",
-            "type": "lldb",
+            "name": "memory_management",
+            "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/bin/Windows_64_Debug/bigInteger.exe",
+            "program": "${workspaceFolder}/build/samples/4.memory_management/memory_management.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "gdb.exe",
+            "setupCommands": [
+                {
+                    "description": "为 gdb 启用整齐打印",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        }, {
+            "name": "forward_declare",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/samples/2.forward_declare/forward_declare.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "gdb.exe",
+            "setupCommands": [
+                {
+                    "description": "为 gdb 启用整齐打印",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        }, {
+            "name": "linkage",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/samples/3.linkage/linkage.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "gdb.exe",
+            "setupCommands": [
+                {
+                    "description": "为 gdb 启用整齐打印",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        }, {
+            "name": "member_offset",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/samples/12.member_offset/member_offset.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

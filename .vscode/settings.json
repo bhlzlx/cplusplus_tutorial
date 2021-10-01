@@ -56,22 +56,7 @@
         "list": "cpp",
         "functional": "cpp",
         "iterator": "cpp",
-        "numeric": "cpp",
-        "bit": "cpp",
-        "chrono": "cpp",
-        "condition_variable": "cpp",
-        "ctime": "cpp",
-        "ratio": "cpp",
-        "shared_mutex": "cpp",
-        "compare": "cpp",
-        "mutex": "cpp",
-        "thread": "cpp",
-        "regex": "cpp",
-        "xhash": "cpp"
-    },
-    "cmake.preferredGenerators": [
-    ],
-    "lldb.displayFormat": "auto",
-    "lldb.showDisassembly": "always",
-    "lldb.dereferencePointers": true
+        "numeric": "cpp"
+    }
+   
 }
