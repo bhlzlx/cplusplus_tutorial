@@ -1,3 +1,4 @@
+add_executable(forward_declare)
 target_sources( forward_declare 
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/hardware/computer.cpp

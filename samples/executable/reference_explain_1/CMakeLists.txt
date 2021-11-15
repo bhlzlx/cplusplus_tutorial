@@ -1,3 +1,4 @@
-target_sources( reference_explain_1
-    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
+add_executable(ref_explain)
+target_sources(ref_explain
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/ref_explain.cpp
 )

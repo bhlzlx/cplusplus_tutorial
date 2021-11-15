@@ -1,4 +1,5 @@
-target_sources( entry_point 
+add_executable(entry_point)
+target_sources(entry_point 
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp 
 )
 

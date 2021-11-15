@@ -1,6 +1,2 @@
-# ============= dynamic base64 implementation =============
-
-AddLibrary( base64_dynamic SHARED "libs" )
-AddLibrary( base64 STATIC "libs")
-
-# ============= static base64 implementation =============
+add_subdirectory(base64)
+add_subdirectory(base64_dynamic)
