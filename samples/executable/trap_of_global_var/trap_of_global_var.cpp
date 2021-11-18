@@ -41,7 +41,7 @@ ClazzSys* GetSys() {
 //     uint8_t _opaque[sizeof(T)];
 // public:
 //     T& ref() {
-//         return *(T*)_opaque[0];
+//         return *(T*)&_opaque[0];
 //     }
 //     template<class ...ARGS>
 //     void initialize(ARGS&&...args) {
