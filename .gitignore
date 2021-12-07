@@ -1,4 +1,5 @@
 
 build/*
 win32/*
+bin/
 
