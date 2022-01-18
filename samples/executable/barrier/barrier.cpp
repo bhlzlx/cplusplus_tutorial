@@ -4,150 +4,79 @@
 #include <condition_variable>
 #include <atomic>
 #include <cstdint>
-#include "../../utility/Timer.h"
+#include <queue>
+#include <cstdint>
 
-class Barrier {
-private:
-    mutable std::mutex                              _mutex;
-    mutable std::condition_variable                 _conditionVariable;
-    mutable uint32_t                                _waitCount;
-    mutable std::atomic<uint32_t>                   _counter;
-    mutable uint32_t                                _round;
-public:
-    Barrier( uint32_t waitCount )
-        : _mutex()
-        , _conditionVariable()
-        , _waitCount(waitCount)
-        , _counter(0)
-    {}
+#include <random>
 
-    void wait() const {
-        std::unique_lock<std::mutex> lock(_mutex);
-        auto round = _round;
-        ++_counter;
-        if(_counter != _waitCount) {
-            _conditionVariable.wait(lock, [this,&round]()->bool {
-                return round != _round;
-            });
-        }
-        else {
-            ++_round;
-            _conditionVariable.notify_all();
-        }
-    }
-
-    void reset() const {
-        std::lock_guard<std::mutex> lock(_mutex);
-        ++_round;
-        _counter = 0;
-        _conditionVariable.notify_all();
-    }
+/**
+ * @brief 
+ * allocated memory info
+ */
+struct alloc_info {
+    void*       ptr;
+    uint32_t    size; 
 };
 
+class ThreadWorker;
 
-class Barrier2 {
+ThreadWorker*       workers = nullptr;
+size_t              workerCount = 4;
+
+class ThreadWorker {
 private:
-    mutable std::mutex                              _mutex;
-    mutable std::condition_variable                 _conditionVariable;
-    mutable uint32_t                                _waitCount;
-    mutable std::atomic<uint32_t>                   _counter;
-    mutable uint32_t                                _round;
+    std::vector<alloc_info>         _operations;
+    std::vector<alloc_info>         _backbuffer;
+    std::mutex                      _mutex;
+    std::condition_variable         _cv;
+    std::thread                     _thread;
+    size_t                          _allocCount;
 public:
-    Barrier2( uint32_t waitCount)
-        : _mutex()
-        , _conditionVariable()
-        , _waitCount(waitCount)
-        , _counter(0)
-    {}
+    ThreadWorker( size_t allocCount )
+        : _operations()
+        , _backbuffer()
+        , _mutex()
+        , _thread()
+        , _allocCount(allocCount){
+    }
 
-    void sig() const {
-        std::unique_lock<std::mutex> lock(_mutex);
-        ++_counter;
-        if(_counter == _waitCount) {
-            ++_round;
-            _conditionVariable.notify_all();
+    void join() {
+        _thread.join();
+    }
+
+    void appendAllocInfo(alloc_info const& alloc) {
+        std::unique_lock<std::mutex> lck(_mutex);
+        _backbuffer.push_back(alloc);
+    }
+
+    static size_t ThreadProc( ThreadWorker* worker ) {
+        std::default_random_engine re(time(0));
+        std::uniform_int_distribution<unsigned> ud(1, 5);
+        std::uniform_int_distribution<unsigned> alloc_ud(25, 100);
+        std::uniform_int_distribution<unsigned> worker_ud(0, workerCount-1);
+        std::uniform_int_distribution<unsigned> size_ud(0, workerCount-1);
+        while(worker->_allocCount) { 
+            
+            using ms = std::chrono::duration<uint32_t, std::milli>;
+            auto sleep_time = ms(ud(re)); // 1~5 ms
+            std::this_thread::sleep_for(sleep_time);
+            auto alloc_count = alloc_ud(re);
+            for(uint32_t i = 0; i<alloc_count; ++i) {
+                auto worker_index = worker_ud(re);
+                auto alloc_size = worker_ud(re);
+                alloc_info alloc = {
+                    malloc(alloc_size),
+                    alloc_size
+                };
+                workers[i].appendAllocInfo(alloc);
+            }
         }
+        return 0;
     }
 
-    void wait() const {
-        std::unique_lock<std::mutex> lock(_mutex);
-        if(_counter != _waitCount) {
-            _conditionVariable.wait(lock, [this]()->bool {
-                return _counter == _waitCount;
-            });
-        }
-    }
-
-    void reset() const {
-        std::lock_guard<std::mutex> lock(_mutex);
-        ++_round;
-        _counter = 0;
-        _conditionVariable.notify_all();
-    }
 };
 
-class Semaphore {
-private:
-    mutable std::mutex                  _mutex;
-    mutable std::condition_variable     _conditionVariable;
-    mutable std::atomic<uint32_t>       _counter;
-public:
-    Semaphore( uint32_t counter )
-        : _mutex()
-        , _conditionVariable()
-        , _counter(0)
-    {}
-
-    void wait() const {
-        std::unique_lock<std::mutex> lock(_mutex);
-        /**
-        * @brief 为什么wait(lock, predator ) 后边这个Predator是必要的，
-        * 因为Linux上应用会出现中断，在wait的时候中断会唤醒线程。这个时候
-        * 并没有notify，所以要加一个predator。
-        */
-        if(_counter == 0) {
-           _conditionVariable.wait(lock, [&]()->bool {
-                return _counter != 0;
-            }); // 阻塞
-        }
-        else {
-            --_counter; // 不阻塞，正常通过
-        }
-    }
-
-    void sig() const {
-        std::unique_lock<std::mutex> lock(_mutex);
-        ++_counter;
-        _conditionVariable.notify_one();
-    }
-};
-
-uint32_t counters[4];
-
-void threadFuncBarrier( uint32_t* counter, Barrier2* barrier ) {
-    std::this_thread::sleep_for(std::chrono::seconds(1)); // 假设算法耗时1秒
-    barrier->sig();
-}
 
 int main() {
-    Barrier2 barrier(4);
-    std::thread threads[4];
-
-    // 创建4个任务，并发执行，总耗时也就一秒多一些。
-    for(uint32_t threadIndex = 0; threadIndex<4; ++threadIndex) {
-        threads[threadIndex] = std::thread( threadFuncBarrier, &counters[threadIndex], &barrier);
-    }
-    cpp::Timer timer;
-    barrier.wait();
-    uint32_t totalCount = 0;
-    for( uint32_t idx = 0; idx<4; ++idx) {
-        totalCount += counters[idx];
-    }
-    uint32_t multiThreadDua = timer.duration();
-    printf("%u\n", multiThreadDua);
-
-    for( auto& thread: threads) {
-        thread.join();
-    }
     return 0;
 }

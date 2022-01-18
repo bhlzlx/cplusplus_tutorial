@@ -1,6 +1,5 @@
 project( HelloQT5 )
 
-
 # set_source_files_properties(main.cpp PROPERTIES SKIP_AUTOMOC ON)
 
 set( CMAKE_FRAMEWORK_PATH ${CMAKE_FRAMEWORK_PATH} "E:/IDE/Qt/Qt5.10.1/5.10.1/msvc2015_64/lib/cmake")
