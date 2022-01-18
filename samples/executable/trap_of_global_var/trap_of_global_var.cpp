@@ -35,17 +35,26 @@ ClazzSys* GetSys() {
     return &sys;
 }
 
+// #include <mutex>
+// #include <thread>
+
 // template<class T>
 // class PlaceHolder {
 // private:
-//     uint8_t _opaque[sizeof(T)];
+//     uint8_t 		_opaque[sizeof(T)];
+// 	std::once_flag 	_onceFlag;
 // public:
 //     T& ref() {
 //         return *(T*)&_opaque[0];
 //     }
 //     template<class ...ARGS>
 //     void initialize(ARGS&&...args) {
-//         new((void*)_opaque) T(std::forward(args)...);
+// 		std::call_once(
+// 			_onceFlag,[this](ARGS&&...args) {
+// 				new((void*)_opaque) T(std::forward(args)...);
+// 			},
+// 			std::forward(args)...
+// 		);
 //     }
 //     void destroy() {
 //         &ref()->~T();

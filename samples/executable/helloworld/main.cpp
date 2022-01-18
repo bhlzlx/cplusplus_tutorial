@@ -1,40 +1,25 @@
 ﻿#include <cstdio>
+#include <array>
+#include <vector>
 #include <cstdint>
-
-class CString {
-private:
-	size_t		_capacity;
-public:
-	CString() 
-		: _capacity( 0 )
-	{
-		printf("con\n");
-	}
-
-	CString( const CString& str )
-		: _capacity( str._capacity )
-	{
-		printf("copy\n");
-	}
-
-	CString& operator=(const CString& str) {
-		printf("assign\n");
-		this->_capacity = str._capacity;
-		return *this;
-	}
-
-	~CString() {
-		printf("con\n");
-	}
-};
-
-CString createString() {
-	CString str;
-	return str;
-}
+#include <random>
+#include <time.h>
+#include <cstdio>
 
 int main() {
-	CString str = createString();
-	printf("hello,world!");
+	srand(time(0));
+	uint8_t i = rand() % 256;
+	while(true) {
+		uint32_t num;
+		scanf("%d", &num);
+		if(num == i) {
+			printf("you got the anwser!");
+			break;
+		} else if(num > i) {
+			printf("the answer is less than you input!\n");
+		} else if(num < i) {
+			printf("the answer is large than you input!\n");
+		}
+	}
 	return 0;
 }
