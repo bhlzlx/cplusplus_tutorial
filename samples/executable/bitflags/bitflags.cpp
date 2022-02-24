@@ -10,9 +10,6 @@ enum class texture_usage_flag_bits : uint8_t {
     shader_write_only = 16,
 };
 
-using texture_usage_t = uint8_t;
-constexpr texture_usage_t typical_usage = (uint8_t)texture_usage_flag_bits::color_attachment | (uint8_t)texture_usage_flag_bits::shader_read_only;
-
 template<typename Enum, typename Value, typename ISENUM = std::enable_if_t<std::is_enum<Enum>::value, bool>>
 class BitFlags {
 private:
@@ -37,7 +34,7 @@ public:
     constexpr bool has(Enum e) const {
         return (_value & create(e)) != 0;
     }
-    void conbine(const BitFlags& other) {
+    void combine(const BitFlags& other) {
         _value |= other._value;
     }
     operator Value() const {
