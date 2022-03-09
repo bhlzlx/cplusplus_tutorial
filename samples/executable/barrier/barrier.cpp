@@ -23,6 +23,10 @@ class ThreadWorker;
 constexpr size_t    workerCount = 4;
 ThreadWorker*       workers[workerCount];
 
+constexpr int32_t       allocatingIntent = 100000;
+std::atomic<int32_t>    allocatingActually = 0;
+std::atomic<int32_t>    freedActually = 0;
+
 class ThreadWorker {
 private:
     std::queue<alloc_info>          _operations;
@@ -30,7 +34,6 @@ private:
     std::mutex                      _mutex;
     mutable std::condition_variable _cv;
     std::thread                     _thread;
-    size_t                          _allocCount;
     //
     std::vector<alloc_info>         _allocatings;
     std::vector<alloc_info>         _frees;
@@ -41,7 +44,7 @@ public:
         _operations.swap(_backbuffer);
     }
 
-    static size_t ThreadProc( ThreadWorker* worker ) {
+    static size_t ConcurrentProc( ThreadWorker* worker ) {
         std::default_random_engine re(time(0));
         std::uniform_int_distribution<unsigned> ud(1, 5);
         std::uniform_int_distribution<unsigned> alloc_ud(25, 100);
@@ -50,7 +53,7 @@ public:
         std::uniform_int_distribution<unsigned> free_ud(25, 100);
         
         std::bitset<workerCount> notify_bitmask;
-        while(worker->_allocCount) {
+        while(allocatingActually.load(std::memory_order_relaxed) < allocatingIntent || freedActually.load(std::memory_order::memory_order_relaxed) < allocatingIntent) {
             using ms = std::chrono::duration<uint32_t, std::milli>;
             auto sleep_time = ms(ud(re)); // 1~5 ms
             std::this_thread::sleep_for(sleep_time);
@@ -62,14 +65,10 @@ public:
                     malloc(alloc_size),
                     alloc_size
                 };
+                ++allocatingActually;
                 worker->_allocatings.push_back(alloc);
                 workers[worker_index]->appendAllocInfo(alloc);
                 notify_bitmask.set(worker_index, true);
-            }
-            for(size_t idx = 0; idx<notify_bitmask.size(); idx++) {
-                if(notify_bitmask[idx]) {
-                    workers[idx]->nofity_appended(); 
-                }
             }
             int32_t free_count = (int32_t)free_ud(re);
             bool swapped = false;
@@ -87,27 +86,44 @@ public:
                     break;
                 }
                 free(alloc.ptr);
+                ++freedActually;
                 worker->_frees.push_back(alloc);
             }
         }
         return 0;
     }
 
-    ThreadWorker( size_t allocCount )
+    void cleanupLeftAllocations() {
+        _thread = std::thread(CleanupProc, this);
+    }
+
+    static size_t CleanupProc( ThreadWorker* worker) {
+        while(!worker->_operations.empty()) {
+            auto alloc = worker->_operations.front();
+            free(alloc.ptr);
+            worker->_operations.pop();
+            ++freedActually;
+        }
+        while(!worker->_backbuffer.empty()) {
+            auto alloc = worker->_backbuffer.front();
+            free(alloc.ptr);
+            worker->_backbuffer.pop();
+            ++freedActually;
+        }
+        return 0;
+    }
+
+    ThreadWorker()
         : _operations()
         , _backbuffer()
         , _mutex()
         , _thread()
-        , _allocCount(allocCount){
-            _thread = std::thread(ThreadWorker::ThreadProc, this);
+        {
+            _thread = std::thread(ThreadWorker::ConcurrentProc, this);
     }
 
     void join() {
         _thread.join();
-    }
-
-    void nofity_appended() const {
-        _cv.notify_one();
     }
 
     void appendAllocInfo(alloc_info const& alloc) {
@@ -119,12 +135,14 @@ public:
 
 
 int main() {
-
-    uint32_t allocate_counts[workerCount] = {
-        3000, 4000, 5000, 6000
-    };
     for(uint32_t i = 0; i<workerCount; ++i) {
-        workers[i] = new ThreadWorker(allocate_counts[i]);
+        workers[i] = new ThreadWorker();
+    }
+    for(uint32_t i = 0; i<workerCount; ++i) {
+        workers[i]->join();
+    }
+    for(uint32_t i = 0; i<workerCount; ++i) {
+        workers[i]->cleanupLeftAllocations();
     }
     for(uint32_t i = 0; i<workerCount; ++i) {
         workers[i]->join();

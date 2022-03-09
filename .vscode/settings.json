@@ -56,7 +56,23 @@
         "list": "cpp",
         "functional": "cpp",
         "iterator": "cpp",
-        "numeric": "cpp"
+        "numeric": "cpp",
+        "compare": "cpp",
+        "ranges": "cpp",
+        "bit": "cpp",
+        "charconv": "cpp",
+        "chrono": "cpp",
+        "condition_variable": "cpp",
+        "format": "cpp",
+        "iomanip": "cpp",
+        "map": "cpp",
+        "mutex": "cpp",
+        "queue": "cpp",
+        "ratio": "cpp",
+        "regex": "cpp",
+        "set": "cpp",
+        "thread": "cpp",
+        "xtree": "cpp"
     }
    
 }
