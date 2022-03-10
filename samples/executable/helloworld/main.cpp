@@ -93,13 +93,13 @@ public:
         Ptr<Node<T>> node_ptr(node, 0);
         while(true) {
             Ptr<Node<T>> tail = _tail.load(std::memory_order::memory_order_relaxed);
-            Node<T>* tail_ptr = tail.ptr();
-            auto& tail_next = tail_ptr->next();
+            auto& tail_next = tail.ptr()->next();
             Ptr<Node<T>> next = tail_next.load(std::memory_order::memory_order_relaxed);
             if(!next.isNull()) {
                 continue;
             }
             node_ptr.setVer(next.ver() + 1);
+            node->next().store(Ptr<Node<T>>(nullptr, node_ptr.ver()+1), std::memory_order::memory_order_relaxed);
             // Ptr<Node<T>> null(nullptr, 0);
             if(!tail_next.compare_exchange_weak(next, node_ptr, std::memory_order::memory_order_relaxed)) {
                 continue;
@@ -114,9 +114,10 @@ public:
         while(true) {
             Ptr<Node<T>> head = _head.load(std::memory_order::memory_order_relaxed);
             Ptr<Node<T>> tail = _tail.load(std::memory_order::memory_order_relaxed);
-            Node<T>* head_ptr = head.ptr();
-            auto& headNext = head_ptr->next();
-            Ptr<Node<T>> next = headNext.load(std::memory_order::memory_order_relaxed);
+            Ptr<Node<T>> next = head.ptr()->next().load(std::memory_order::memory_order_relaxed);
+            // Node<T>* head_ptr = head.ptr();
+            // auto& headNext = head_ptr->next();
+            // Ptr<Node<T>> next = headNext.load(std::memory_order::memory_order_relaxed);
             // Ptr<Node<T>> next = *(Ptr<Node<T>>*)&headNext;
             // Ptr<Node<T>> next = headNext.load(std::memory_order::memory_order_relaxed);
             if(head.addrEqual(tail) || next.isNull()) {
@@ -125,7 +126,7 @@ public:
             next.upgrade();
             if(_head.compare_exchange_weak(head, next, std::memory_order::memory_order_relaxed)) {
                 t = std::move(next->data());
-                delete head_ptr;
+                delete head.ptr();
                 return 0;
             }
         }
