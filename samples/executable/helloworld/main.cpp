@@ -1,6 +1,7 @@
 ﻿#include <cstdint>
 #include <atomic>
 #include <thread>
+#include <cassert>
 
 constexpr uint32_t CacheLineSize = 64;
 
@@ -54,12 +55,12 @@ public:
 
 
 template<class T>
-class Node {
+class alignas(8) Node {
 private:
     static_assert(sizeof(Ptr<Node<T>>) == sizeof(uint64_t), "Ptr<Node<T>> must be 8 bytes" );
     //
     std::atomic<Ptr<Node>>  _next;
-    T                       _data;
+    std::atomic<T>          _data;
 public:
     Node(T&& t) 
         : _next(Ptr<Node>(nullptr, 0))
@@ -69,8 +70,8 @@ public:
     std::atomic<Ptr<Node>>& next() {
         return _next;
     }
-    T& data() {
-        return _data;
+    T data() {
+        return _data.load(std::memory_order::memory_order_relaxed);
     }
 };
 
@@ -89,8 +90,7 @@ public:
     }
 
     void push(T&& t) {
-        Node<T>* node = new Node<T>(std::move(t));
-        Ptr<Node<T>> node_ptr(node, 0);
+        Ptr<Node<T>> node_ptr(new Node<T>(std::move(t)), 0);
         while(true) {
             Ptr<Node<T>> tail = _tail.load(std::memory_order::memory_order_relaxed);
             auto& tail_next = tail.ptr()->next();
@@ -99,14 +99,13 @@ public:
                 continue;
             }
             node_ptr.setVer(next.ver() + 1);
-            node->next().store(Ptr<Node<T>>(nullptr, node_ptr.ver()+1), std::memory_order::memory_order_relaxed);
-            // Ptr<Node<T>> null(nullptr, 0);
+            node_ptr.ptr()->next().store(Ptr<Node<T>>(nullptr, next.ver()+1), std::memory_order::memory_order_relaxed);
             if(!tail_next.compare_exchange_weak(next, node_ptr, std::memory_order::memory_order_relaxed)) {
                 continue;
             }
-            if(_tail.compare_exchange_weak(tail, node_ptr, std::memory_order::memory_order_relaxed)) {
-                break;
-            }
+            auto rst = _tail.compare_exchange_strong(tail, node_ptr, std::memory_order::memory_order_relaxed);
+            assert(rst);
+            break;
         }
     }
 
@@ -114,19 +113,16 @@ public:
         while(true) {
             Ptr<Node<T>> head = _head.load(std::memory_order::memory_order_relaxed);
             Ptr<Node<T>> tail = _tail.load(std::memory_order::memory_order_relaxed);
-            Ptr<Node<T>> next = head.ptr()->next().load(std::memory_order::memory_order_relaxed);
-            // Node<T>* head_ptr = head.ptr();
-            // auto& headNext = head_ptr->next();
-            // Ptr<Node<T>> next = headNext.load(std::memory_order::memory_order_relaxed);
-            // Ptr<Node<T>> next = *(Ptr<Node<T>>*)&headNext;
-            // Ptr<Node<T>> next = headNext.load(std::memory_order::memory_order_relaxed);
+            Node<T>* head_ptr = head.ptr();
+            Ptr<Node<T>> next = head_ptr->next().load(std::memory_order::memory_order_consume);
             if(head.addrEqual(tail) || next.isNull()) {
                 return -1;
             }
             next.upgrade();
-            if(_head.compare_exchange_weak(head, next, std::memory_order::memory_order_relaxed)) {
-                t = std::move(next->data());
-                delete head.ptr();
+            if(_head.compare_exchange_weak(head, next, std::memory_order::memory_order_release, std::memory_order::memory_order_relaxed)) {
+                Node<T>* next_ptr = next.ptr();
+                t = next_ptr->data();
+                delete head_ptr;
                 return 0;
             }
         }
@@ -134,11 +130,11 @@ public:
 };
 
 struct alignas(CacheLineSize) producer_t {
-    int counter;
+    uint64_t counter;
 };
 
 struct alignas(CacheLineSize) consumer_t {
-    int sum;
+    uint64_t sum;
 };
 
 struct TaskConext {
@@ -146,20 +142,21 @@ struct TaskConext {
     consumer_t consumer_info[8];
 };
 
-size_t produce_proc(TaskConext* context, size_t id, Queue<int>& queue){
-    int i = 0;
-    while(i<100000) {
+size_t produce_proc(TaskConext* context, size_t id, Queue<uint64_t>& queue){
+    uint64_t i = 0;
+    while(i<240000) {
         queue.push(std::move(i));
+        // context->producer_info[id].counter+=i;
         context->producer_info[id].counter+=i;
         ++i;
     }
     return 0;
 }
 
-size_t consumer_proc(TaskConext* context, size_t id, Queue<int>& queue){
-    int i = 0;
-    while(i<100000) {
-        int data;
+size_t consumer_proc(TaskConext* context, size_t id, Queue<uint64_t>& queue){
+    uint64_t i = 0;
+    while(i<120000) {
+        uint64_t data;
         if(queue.pop(data) == 0) {
             context->consumer_info[id].sum+=data;
             i++;
@@ -171,27 +168,27 @@ size_t consumer_proc(TaskConext* context, size_t id, Queue<int>& queue){
 TaskConext taskContext = { {}, {} };
 
 int main() {
-    Queue<int> q;
+    Queue<uint64_t> q;
 
-    std::thread producer_threads[8] = {
+    std::thread producer_threads[] = {
         std::thread(produce_proc, &taskContext, 0, std::ref(q)),
-        std::thread(produce_proc, &taskContext, 1, std::ref(q)),
-        std::thread(produce_proc, &taskContext, 2, std::ref(q)),
-        std::thread(produce_proc, &taskContext, 3, std::ref(q)),
-        std::thread(produce_proc, &taskContext, 4, std::ref(q)),
-        std::thread(produce_proc, &taskContext, 5, std::ref(q)),
-        std::thread(produce_proc, &taskContext, 6, std::ref(q)),
-        std::thread(produce_proc, &taskContext, 7, std::ref(q))
+        // std::thread(produce_proc, &taskContext, 1, std::ref(q)),
+        // std::thread(produce_proc, &taskContext, 2, std::ref(q)),
+        // std::thread(produce_proc, &taskContext, 3, std::ref(q)),
+        // std::thread(produce_proc, &taskContext, 4, std::ref(q)),
+        // std::thread(produce_proc, &taskContext, 5, std::ref(q)),
+        // std::thread(produce_proc, &taskContext, 6, std::ref(q)),
+        // std::thread(produce_proc, &taskContext, 7, std::ref(q))
     };
-    std::thread consumer_threads[8] = {
+    std::thread consumer_threads[] = {
         std::thread(consumer_proc, &taskContext, 0, std::ref(q)),
         std::thread(consumer_proc, &taskContext, 1, std::ref(q)),
-        std::thread(consumer_proc, &taskContext, 2, std::ref(q)),
-        std::thread(consumer_proc, &taskContext, 3, std::ref(q)),
-        std::thread(consumer_proc, &taskContext, 4, std::ref(q)),
-        std::thread(consumer_proc, &taskContext, 5, std::ref(q)),
-        std::thread(consumer_proc, &taskContext, 6, std::ref(q)),
-        std::thread(consumer_proc, &taskContext, 7, std::ref(q))
+        // std::thread(consumer_proc, &taskContext, 2, std::ref(q)),
+        // std::thread(consumer_proc, &taskContext, 3, std::ref(q)),
+        // std::thread(consumer_proc, &taskContext, 4, std::ref(q)),
+        // std::thread(consumer_proc, &taskContext, 5, std::ref(q)),
+        // std::thread(consumer_proc, &taskContext, 6, std::ref(q)),
+        // std::thread(consumer_proc, &taskContext, 7, std::ref(q))
     };
 
     for(auto& t : producer_threads) {
